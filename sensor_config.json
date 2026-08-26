@@ -1,0 +1,43 @@
+{
+  "sensors": [
+    {
+      "key": "param1",
+      "name": "测试",
+      "can_id": "0x101",
+      "start_byte": 0,
+      "length": 2,
+      "data_type": "int",
+      "signed": true,
+      "byte_order": "little",
+      "scale": 0.01,
+      "offset": 0,
+      "unit": ""
+    },
+    {
+      "key": "param2",
+      "name": "参数2",
+      "can_id": "0x101",
+      "start_byte": 2,
+      "length": 2,
+      "data_type": "int",
+      "signed": true,
+      "byte_order": "little",
+      "scale": 0.1,
+      "offset": 0,
+      "unit": ""
+    },
+    {
+      "key": "param3",
+      "name": "参数3",
+      "can_id": "0x102",
+      "start_byte": 0,
+      "length": 2,
+      "data_type": "int",
+      "signed": true,
+      "byte_order": "little",
+      "scale": 0.01,
+      "offset": 0,
+      "unit": ""
+    }
+  ]
+}
