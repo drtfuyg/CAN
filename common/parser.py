@@ -1,7 +1,7 @@
 import json
 import struct
 from pathlib import Path
-from models import SensorValue
+from common.models import SensorValue
 
 # 允许的 CAN 数据场最大长度
 MAX_CAN_DATA = 8

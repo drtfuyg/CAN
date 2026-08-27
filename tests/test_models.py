@@ -2,7 +2,7 @@
 import unittest
 from datetime import datetime
 
-from models import CanFrame, SensorValue
+from common.models import CanFrame, SensorValue
 
 
 class TestCanFrame(unittest.TestCase):

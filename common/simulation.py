@@ -30,8 +30,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional, Sequence, Tuple
 
-from models import CanFrame
-from can_utils import clamp_signed, clamp_unsigned
+from common.models import CanFrame
+from common.can_utils import clamp_signed, clamp_unsigned
 
 
 # ---------------------------------------------------------------------------

@@ -5,8 +5,8 @@ import tempfile
 import unittest
 from datetime import datetime
 
-from data_logger import CsvCanLogger
-from models import CanFrame
+from common.data_logger import CsvCanLogger
+from common.models import CanFrame
 
 
 class TestCsvCanLogger(unittest.TestCase):

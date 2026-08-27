@@ -1,7 +1,7 @@
 """ZLG 32 位 can_id 标志位编解码测试（对应真实后端 zlg_backend 的解码逻辑）。"""
 import unittest
 
-from can_utils import (
+from common.can_utils import (
     decode_raw_can_id,
     encode_raw_can_id,
     clamp_signed,

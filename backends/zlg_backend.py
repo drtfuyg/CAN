@@ -3,11 +3,11 @@ import time
 from datetime import datetime
 
 from .base import CanBackend
-from models import CanFrame
-from can_utils import decode_raw_can_id
+from common.models import CanFrame
+from common.can_utils import decode_raw_can_id
 
 try:
-    from zlgcan import (
+    from backends.zlgcan import (
         ZCAN,
         ZCAN_USBCAN2,
         ZCAN_TYPE_CAN,

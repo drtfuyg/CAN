@@ -3,8 +3,6 @@ import time
 from pathlib import Path
 
 class CsvCanLogger:
-    # 高频写入时每帧都 flush 会严重拖慢真实总线接收；
-    # 改为按时间节流批量刷盘（最多丢 0.5s 数据，性能显著提升）。
     FLUSH_INTERVAL_S = 0.5
 
     def __init__(self):

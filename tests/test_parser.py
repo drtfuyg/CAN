@@ -7,8 +7,8 @@ import unittest
 from datetime import datetime
 from pathlib import Path
 
-from models import CanFrame
-from parser import SensorParser
+from common.models import CanFrame
+from common.parser import SensorParser
 
 
 def make_frame(can_id=0x101, data=b"\x00" * 8, **kw):

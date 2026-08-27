@@ -1,7 +1,7 @@
 from PySide6.QtCore import QTimer
 
 from .base import CanBackend
-from simulation import RealisticBusSimulator, simulator_from_config
+from common.simulation import RealisticBusSimulator, simulator_from_config
 
 
 class SimulatedCanBackend(CanBackend):

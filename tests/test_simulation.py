@@ -1,8 +1,8 @@
 """真实总线仿真引擎测试。"""
 import unittest
 
-from models import CanFrame
-from simulation import (
+from common.models import CanFrame
+from common.simulation import (
     MessageSpec,
     RealisticBusSimulator,
     SignalSpec,

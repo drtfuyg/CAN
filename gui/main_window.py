@@ -12,8 +12,8 @@ from PySide6.QtGui import QPainter
 
 from backends.simulated import SimulatedCanBackend
 from backends.zlg_backend import ZlgCanBackend
-from parser import SensorParser
-from data_logger import CsvCanLogger
+from common.parser import SensorParser
+from common.data_logger import CsvCanLogger
 from .parameter_card import ParameterCard
 
 class MainWindow(QMainWindow):

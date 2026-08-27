@@ -6,9 +6,9 @@
 import os
 import unittest
 
-from models import CanFrame, SensorValue
-from parser import SensorParser
-from simulation import (
+from common.models import CanFrame, SensorValue
+from common.parser import SensorParser
+from common.simulation import (
     MessageSpec,
     RealisticBusSimulator,
     SignalSpec,

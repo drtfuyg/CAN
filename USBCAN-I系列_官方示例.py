@@ -2,7 +2,7 @@
     支持的设备有 USBCAN-I、USBCAN-II、USBCAN-I-mini、PCI9810、PCI9820、PCI5110、PCIe-9110I、PCI9820I、PCIE-9221、PCIe-9120I、PCI5121。
 '''
 
-from zlgcan import *
+from backends.zlgcan import *
 import threading
 import time
 
