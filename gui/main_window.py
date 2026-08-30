@@ -65,8 +65,11 @@ class MainWindow(QMainWindow):
         self.filter = QLineEdit()
         self.filter.setPlaceholderText("过滤 CAN ID，如 0x101；留空=全部")
 
-        self.listen_only = QCheckBox("只听模式")
-        self.listen_only.setChecked(True)
+        self.work_mode = QComboBox()
+        self.work_mode.addItems(
+            ["正常模式", "只读(只听)模式", "自收自发模式"]
+        )
+        self.work_mode.setCurrentIndex(0)  # 默认只读，与之前"只听"一致
 
         self.pause = QCheckBox("暂停界面刷新")
         self.pause.stateChanged.connect(
@@ -101,7 +104,8 @@ class MainWindow(QMainWindow):
         top2 = QHBoxLayout()
         top2.addWidget(QLabel("过滤："))
         top2.addWidget(self.filter)
-        top2.addWidget(self.listen_only)
+        top2.addWidget(QLabel("模式："))
+        top2.addWidget(self.work_mode)
         top2.addWidget(self.pause)
         top2.addStretch()
         top2.addWidget(self.reload_btn)
@@ -217,7 +221,9 @@ class MainWindow(QMainWindow):
             self.backend = ZlgCanBackend(
                 channel=self.channel.currentIndex(),
                 baudrate=self._baud_value(),
-                listen_only=self.listen_only.isChecked(),
+                mode=["normal", "listen", "loopback"][
+                    self.work_mode.currentIndex()
+                ],
                 parent=self,
             )
 
