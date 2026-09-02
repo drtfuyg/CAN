@@ -366,6 +366,22 @@ class ZlgCanBackend(CanBackend):
                 f"{self.channel_baudrates.get(channel, self.baudrate)} bps 和终端电阻"
             )
             return False
+
+        # 发送成功后，把该帧广播给界面显示（类似 CANTest 的发送记录），
+        # 这样“原始 CAN”里也能看到自己发出的查询/控制帧（方向 TX）。
+        self.frame_transmitted.emit(
+            CanFrame(
+                pc_timestamp=datetime.now(),
+                can_id=can_id,
+                data=payload,
+                channel=channel,
+                is_extended=bool(extended),
+                is_remote=bool(remote),
+                is_error=False,
+                device_timestamp_us=int(time.time() * 1_000_000),
+                direction="TX",
+            )
+        )
         return True
 
     def stop(self):

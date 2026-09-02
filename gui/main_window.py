@@ -178,9 +178,9 @@ class MainWindow(QMainWindow):
         self.params_layout = QGridLayout(self.params_group)
         self.cards = {}
 
-        self.table = QTableWidget(0, 8)
+        self.table = QTableWidget(0, 9)
         self.table.setHorizontalHeaderLabels(
-            ["序号","PC时间","设备时间/ms","通道","CAN ID","帧类型","DLC","DATA"]
+            ["序号","PC时间","设备时间/ms","通道","CAN ID","方向","帧类型","DLC","DATA"]
         )
         self.table.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeToContents
@@ -310,6 +310,7 @@ class MainWindow(QMainWindow):
             )
 
         self.backend.frame_received.connect(self.on_frame)
+        self.backend.frame_transmitted.connect(self.on_frame_transmitted)
         self.backend.status_changed.connect(
             lambda text: self.status.setText("状态：" + text)
         )
@@ -565,6 +566,28 @@ class MainWindow(QMainWindow):
                 sensor_value.value,
             )
 
+    @Slot(object)
+    def on_frame_transmitted(self, frame):
+        """处理本机发送的 TX 帧，追加到“原始 CAN”表格（不写 CSV、不解析）。"""
+        self.total += 1
+        self.counts[frame.can_id] += 1
+        now = time.monotonic()
+        if now - self._last_stats_update >= 0.3:
+            self.stats.setText(
+                f"总接收：{self.total} 帧 | CAN ID：{len(self.counts)} 种"
+            )
+            self._refresh_stats()
+            self._last_stats_update = now
+
+        if self.paused:
+            return
+
+        filter_id = self._filter_id()
+        if filter_id not in (None, "bad") and frame.can_id != filter_id:
+            return
+
+        self._append_raw(frame)
+
     def _refresh_stats(self):
         items = sorted(self.counts.items())
         self.stats_table.setRowCount(len(items))
@@ -594,6 +617,7 @@ class MainWindow(QMainWindow):
             "" if frame.device_timestamp_us is None else f"{frame.device_timestamp_us/1000:.3f}",
             str(frame.channel),
             f"0x{frame.can_id:X}",
+            frame.direction,
             frame_type,
             str(frame.dlc),
             frame.data_hex,

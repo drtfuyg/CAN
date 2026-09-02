@@ -15,6 +15,8 @@ class CanFrame:
     # 远程帧没有数据场，但报头仍携带请求的 DLC；
     # 保存它以便表格/CSV 能显示真实的远程帧长度。
     raw_dlc: Optional[int] = None
+    # 帧方向：RX-接收 TX-发送（用于在原始表格里显示自己发出的帧）
+    direction: str = "RX"
 
     @property
     def dlc(self):

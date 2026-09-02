@@ -2,6 +2,7 @@ from PySide6.QtCore import QObject, Signal
 
 class CanBackend(QObject):
     frame_received = Signal(object)
+    frame_transmitted = Signal(object)
     status_changed = Signal(str)
     error_occurred = Signal(str)
 
