@@ -2,13 +2,14 @@
     支持的设备有 USBCAN-I、USBCAN-II、USBCAN-I-mini、PCI9810、PCI9820、PCI5110、PCIe-9110I、PCI9820I、PCIE-9221、PCIe-9120I、PCI5121。
 '''
 
-from backends.zlgcan import *
+from zlgcan import *
 import threading
 import time
 
 thread_flag = True
 print_lock = threading.Lock()   # 线程锁，只是为了打印不冲突
 enable_merge_receive = 0        # 合并接收标识
+self_send = True
 
 #读取设备信息
 def Read_Device_Info(device_handle):
@@ -73,7 +74,7 @@ def USBCANI_Start(zcanlib, device_handle, chn):
     # 初始化通道
     chn_init_cfg = ZCAN_CHANNEL_INIT_CONFIG()
     chn_init_cfg.can_type = ZCAN_TYPE_CAN           # USBCAN 必须选择CAN
-    chn_init_cfg.config.can.mode = 0                # 0-正常模式 1-只听模式
+    chn_init_cfg.config.can.mode = 2 if self_send else 0                # 0-正常模式 1-只听模式
     chn_init_cfg.config.can.acc_code = 0            # 默认参数
     chn_init_cfg.config.can.acc_mask = 0xFFFFFFFF   # 默认参数
 
@@ -97,7 +98,7 @@ def Transmit_Test(chn_handle):
     msgs = (ZCAN_Transmit_Data * transmit_num)()
     memset(addressof(msgs),0,sizeof(msgs))
     for i in range(transmit_num):
-        msgs[i].transmit_type = 0       # 0-正常发送，2-自发自收
+        msgs[i].transmit_type = 2 if self_send else 0       # 0-正常发送，2-自发自收
         msgs[i].frame.can_id = 10       # 发送id
         msgs[i].frame.can_id |= 1<<31   # 最高位(bit31)为 扩展帧/标准帧 标识位 同理 bit30为 数据帧/远程帧
         msgs[i].frame.can_dlc = 8       # 数据长度

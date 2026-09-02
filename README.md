@@ -20,7 +20,7 @@
 5. 支持 CAN ID bit29 错误帧标志
 6. 原始报文表格新增“设备时间/ms”
 7. CSV 同时保存 PC 时间、设备时间和错误帧标志
-8. 增加“只听模式”，真实设备首次接入默认开启
+8. 增加“只读(只听)模式”；查询传感器时需切换到“正常模式”
 9. 保留模拟模式、过滤、统计、曲线、参数配置、CSV
 
 ## 运行
@@ -32,14 +32,34 @@ cd C:\Users\violet\Desktop\can_sensor_monitor_v4_1
 python main.py
 ```
 
+推荐使用单独的 `can` Conda 环境运行（已配置 PySide6）：
+
+```powershell
+F:\Anaconda\Scripts\conda.exe activate can
+cd C:\Users\Kaiddin\Desktop\CAN\CAN
+python main.py
+```
+
+VS Code 打开本目录后，`.vscode/settings.json` 已将解释器设为
+`F:\Anaconda\envs\can\python.exe`，按 F5 可直接启动。
+
+### Windows 打不开 USBCAN-II+
+
+如果设备管理器已经显示“ZLG USBCAN / 此设备运转正常”，但程序提示
+`OpenDevice 返回 0`，请检查 Microsoft Visual C++ 2008 SP1 运行库是否安装。
+项目的 64 位 `kerneldlls\USBCAN.dll` 依赖 MFC 运行库；缺少 `mfc90.dll` 时，
+ZLG DLL 会加载失败而只返回无效句柄。安装微软官方 `vcredist_x64.exe` 后
+重新启动程序即可。当前机器已验证安装后 `OpenDevice` 返回有效句柄，并能读取
+设备信息（USBCAN、2 个 CAN 通道）。
+
 ## 首次真实设备测试建议
 
 1. 先安装 ZLG Windows 驱动
 2. 用 ZLG 官方软件确认设备能打开
 3. 本程序选择 `ZLG USBCAN-II+`
-4. CAN0 / CAN1 按实际接线选择
+4. 传感器接 CAN0、实验箱 iCAN-4050 接 CAN1；程序会同时初始化两个通道
 5. 波特率按传感器/总线协议选择
-6. 首次保持“只听模式”勾选
+6. 只观察总线时可选“只读(只听)模式”；要查询 SM1810C，必须选“正常模式”
 7. 点击“开始”
 8. 先观察“原始 CAN”和“报文统计”
 9. 确认原始报文正常后，再配置 `sensor_config.json`
@@ -78,6 +98,19 @@ python -m unittest discover -s tests -v
 ## 真实总线仿真（模拟模式）
 
 `simulation.py` 提供了贴近真实总线的仿真引擎，`模拟模式` 现在基于它：
+
+## SM1810C 温度控制实验
+
+本项目新增 `common/sm1810c.py`，按 SM1810C 手册实现查询与解析：
+
+- 手册默认波特率 50 kbps；本实验传感器已实测为 250 kbps；节点 1
+- 查询帧：CAN ID `0x001`，数据 `01 03 00 00 00 02`
+- 响应帧：CAN ID `0x000`，`01 03 04 TT TT HH HH`
+- 温度/湿度为大端无符号整数除以 100
+
+在界面选择“ZLG USBCAN-II+”“正常模式”和 `250 kbps` 后点击“开始”，程序会同时初始化 CAN0、CAN1：按查询周期从传感器通道发送查询帧，并在温度/湿度卡片和曲线中显示响应值。当前上限默认设为 `27 ℃`，温度严格大于 27 ℃时进入“高温”状态；下限、上限和“启用温度控制”可在界面设置。若更换传感器，应以该设备实际波特率为准。
+
+iCAN-4050 灯控命令放在 `experiment_box.json`：CAN1 使用 500 kbps、扩展数据帧、CAN ID `0x2120`、DLC 2。经本实验箱实测，DO 指示灯为低电平有效：`00 00` 时两灯亮，`00 01` 时 DO1 亮，`00 02` 时 DO0 亮，`00 03` 时两灯灭。因此当前配置为高温 `00 02`（DO0 亮、DO1 灭）、低温 `00 01`（DO0 灭、DO1 亮）、正常 `00 03`（两灯都灭）。程序在温度状态切换时各发送一次对应命令。请确认实验箱的高温指示灯接在 DOUT0、低温指示灯接在 DOUT1，并确认实验箱模块的 MAC ID 仍为出厂值 1。
 
 - 多周期报文 + 周期抖动（如 100ms 配置报文、20ms 高速无关报文）
 - 总线上的"无关报文"（`0x1F0`/`0x1F1`，可验证过滤与统计）

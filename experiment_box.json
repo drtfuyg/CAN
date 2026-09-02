@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "description": "iCAN-4050 写输出端口协议；本实验箱实测 DO 输出为低电平有效。DO0 用作高温指示灯，DO1 用作低温指示灯。",
+  "channel": 1,
+  "baudrate": 500000,
+  "can_id": "0x2120",
+  "extended": true,
+  "connection": {
+    "enabled": true,
+    "can_id": "0x24F7",
+    "extended": true,
+    "data": ["0x00", "0x00", "0x00"]
+  },
+  "commands": {
+    "low": {"data": ["0x00", "0x01"], "description": "低温：实测 DO0 灭、DO1 亮"},
+    "normal": {"data": ["0x00", "0x03"], "description": "正常：实测 DO0 灭、DO1 灭"},
+    "high": {"data": ["0x00", "0x02"], "description": "高温：实测 DO0 亮、DO1 灭"}
+  }
+}
