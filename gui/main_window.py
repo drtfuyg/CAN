@@ -69,6 +69,8 @@ class MainWindow(QMainWindow):
         self.mode = QComboBox()
         self.mode.addItems(["模拟模式", "ZLG USBCAN-II+"])
         self.mode.currentIndexChanged.connect(self._create_backend)
+        # 切换数据源时按模式重建参数卡片（模拟=sensor_config，ZLG=温度湿度）
+        self.mode.currentIndexChanged.connect(self._rebuild_cards)
 
         self.channel = QComboBox()
         self.channel.addItems(["CAN0", "CAN1"])
@@ -246,28 +248,29 @@ class MainWindow(QMainWindow):
         seen = set()
         row_index = 0
 
-        for rule in self.parser.rules:
-            key = rule.get("key")
-            if not key or key in seen:
-                continue
-            seen.add(key)
+        # 模拟模式：显示 sensor_config.json 的参数卡片；
+        # 真实 ZLG 模式：只显示 SM1810C 温度/湿度卡片。
+        if self.mode.currentIndex() == 0:
+            for rule in self.parser.rules:
+                key = rule.get("key")
+                if not key or key in seen:
+                    continue
+                seen.add(key)
 
-            card = ParameterCard(rule.get("name", key))
-            self.cards[key] = card
-            self.params_layout.addWidget(
-                card, row_index // 4, row_index % 4
-            )
-            row_index += 1
-
-        # 真实 SM1810C 的固定信号，即使 sensor_config.json 仍保留旧的
-        # 仿真规则，也要在界面上提供温度和湿度卡片。
-        for key, name in (("temperature", "温度"), ("humidity", "湿度")):
-            if key in self.cards:
-                continue
-            card = ParameterCard(name)
-            self.cards[key] = card
-            self.params_layout.addWidget(card, row_index // 4, row_index % 4)
-            row_index += 1
+                card = ParameterCard(rule.get("name", key))
+                self.cards[key] = card
+                self.params_layout.addWidget(
+                    card, row_index // 4, row_index % 4
+                )
+                row_index += 1
+        else:
+            for key, name in (("temperature", "温度"), ("humidity", "湿度")):
+                card = ParameterCard(name)
+                self.cards[key] = card
+                self.params_layout.addWidget(
+                    card, row_index // 4, row_index % 4
+                )
+                row_index += 1
 
     def _baud_value(self):
         return {
